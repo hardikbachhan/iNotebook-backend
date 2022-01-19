@@ -23,6 +23,6 @@ const UserSchema = new Schema({
   }
 });
 
-const User = mongoose.model("user", UserSchema);
-User.createIndexes();   // to make email a unique index
+const User = mongoose.model("user", UserSchema);   // a model means a mongodb collection
+// User.createIndexes();   // to make email a unique index
 module.exports = User;
