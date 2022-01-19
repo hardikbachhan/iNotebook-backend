@@ -6,7 +6,9 @@ const bcrpyt = require("bcryptjs");
 
 // JWT secret signature, should be stored in .env.local or config file.
 // Used to sign JWT when sending to a new user so that (s)he can access protected routes.
-const JWT_SECRET = "#ard!k1$ago@db0y"
+const JWT_SECRET = "#ard!k1$ago@db0y";
+
+const jwt = require("jsonwebtoken");
 
 // Create a User using: POST "/api/auth/createuser". Doesn't require Authentication/ No login required
 authRouter.post("/createuser", [
@@ -42,7 +44,17 @@ authRouter.post("/createuser", [
         //     res.json({error: 'Please enter a unique value.', message: err.message});
         // })
 
-        res.json({message: "user created successfully!"}); 
+        // data which will become the payload of jwt
+        const data = {
+            user: {
+                id: user.id
+            }
+        }
+        // signing the payload using out signature
+        const authToken = jwt.sign(data, JWT_SECRET);
+        // console.log(jwtData);
+        // res.json({message: "user created successfully!"}); 
+        res.json({authToken})
 
     } catch (error) {    // catching errors
         console.error(error.message);
