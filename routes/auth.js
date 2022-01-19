@@ -2,6 +2,11 @@ const express = require("express");
 const authRouter = express.Router();
 const User = require("../models/User");
 const { body, validationResult } = require("express-validator");
+const bcrpyt = require("bcryptjs");
+
+// JWT secret signature, should be stored in .env.local or config file.
+// Used to sign JWT when sending to a new user so that (s)he can access protected routes.
+const JWT_SECRET = "#ard!k1$ago@db0y"
 
 // Create a User using: POST "/api/auth/createuser". Doesn't require Authentication/ No login required
 authRouter.post("/createuser", [
@@ -14,26 +19,30 @@ authRouter.post("/createuser", [
     if (!errors.isEmpty()){
         res.status(400).json({errors: errors.array()})
     }
-    // check if user with this email exists already
     try {
+        // check if user with this email exists already
         
-    let user = await User.findOne({email: req.body.email});
-    if (user){
-        return res.status(400).json({error: "Sorry, a user with this email already exists."});
-    }
-    // creating a new user
-    user = await User.create({   // returns a promise
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password
-    })
-    // .then((user) => res.json(user))
-    // .catch(err => {
-    //     console.log(err);
-    //     res.json({error: 'Please enter a unique value.', message: err.message});
-    // })
+        let user = await User.findOne({email: req.body.email});
+        if (user){
+            return res.status(400).json({error: "Sorry, a user with this email already exists."});
+        }
+        // hashing the password before saving it in database
+        const salt = await bcrpyt.genSalt(10);
+        const secPass = await bcrpyt.hash(req.body.password, salt);
 
-    res.json({message: "user created successfully!"}); 
+        // creating a new user
+        user = await User.create({   // returns a promise
+            name: req.body.name,
+            email: req.body.email,
+            password: secPass
+        })
+        // .then((user) => res.json(user))
+        // .catch(err => {
+        //     console.log(err);
+        //     res.json({error: 'Please enter a unique value.', message: err.message});
+        // })
+
+        res.json({message: "user created successfully!"}); 
 
     } catch (error) {    // catching errors
         console.error(error.message);
