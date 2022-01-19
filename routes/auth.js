@@ -10,7 +10,7 @@ const JWT_SECRET = "#ard!k1$ago@db0y";
 
 const jwt = require("jsonwebtoken");
 
-// Create a User using: POST "/api/auth/createuser". Doesn't require Authentication/ No login required
+// ROUTE 1: Create a User using: POST "/api/auth/createuser". Doesn't require Authentication/ No login required
 authRouter.post("/createuser", [
     body('name', 'Enter a valid name').isLength({min: 3}),
     body('email', 'Enter a valid email').isEmail(),
@@ -58,7 +58,45 @@ authRouter.post("/createuser", [
 
     } catch (error) {    // catching errors
         console.error(error.message);
-        res.status(500).send("Some error occured.");
+        res.status(500).send("Internal Server error.");
+    }
+});
+
+// ROUTE 2: Authenticate a User using: POST "/api/auth/login". No login required
+authRouter.post("/login", [
+    body('email', 'Enter a valid email').isEmail(),
+    body('password', 'Password cannot be blank').exists(),
+], async (req, res) => {
+    // if there are errors, return bad request and the errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()){
+        return res.status(400).json({errors: errors.array()})   
+    }
+    // finding user according to details given
+    const {email, password} = req.body;
+    try {
+
+        let user = await User.findOne({email});
+        // console.log(user.name);
+        if (!user){
+            return res.status(400).json({error: "Please enter valid credentials."});
+        }
+        const passwordCompare = await bcrpyt.compare(password, user.password)
+        if (!passwordCompare){
+            return res.status(400).json({error: "Please enter valid credentials."});
+        }
+        // res.json({message: "User login successfully."})
+        const data = {
+            user: {
+                id: user.id
+            }
+        }
+        const authToken = jwt.sign(data, JWT_SECRET);
+        res.json({authToken})
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send("Internal Server error.");
     }
 });
 
