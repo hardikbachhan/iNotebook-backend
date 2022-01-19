@@ -1,6 +1,7 @@
 const express = require("express");
 const authRouter = express.Router();
 const User = require("../models/User");
+const fetchuser = require("../middleware/fetchuser");
 const { body, validationResult } = require("express-validator");
 const bcrpyt = require("bcryptjs");
 
@@ -94,6 +95,20 @@ authRouter.post("/login", [
         const authToken = jwt.sign(data, JWT_SECRET);
         res.json({authToken})
 
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send("Internal Server error.");
+    }
+});
+
+// ROUTE 3: Get loggedin User details using: POST "api/auth/getuser". Login required.
+// A JWT token will be sent which will be used to identify user and get details.
+authRouter.post("/getuser", fetchuser, async (req, res) => {
+    try {
+        const userId = req.user.id;  //"todo";
+        const user = await User.findById(userId).select("-password");
+        console.log(user);
+        res.send("user data found")
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server error.");
