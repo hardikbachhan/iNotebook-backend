@@ -5,6 +5,10 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const NotesSchema = new Schema({
+  user: {       // foreign key
+    type: mongoose.Schema.Types.ObjectId,   // objectid of a document of another model 
+    ref: 'user'                             // model in which above id is present
+  },
   title: {
     type: String,
     required: true
