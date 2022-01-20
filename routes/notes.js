@@ -73,6 +73,7 @@ notesRouter.put("/updatenote/:id", fetchuser, [
         if (!note){
             return res.status(404).send("Not Found");
         }
+        // Allow Updation only if this note belongs to the user
         const isValidReq = note.user.equals(req.user.id); // note.user.toString() === req.user.id
         if (!isValidReq){
             return res.status(401).send("Not Allowed");
@@ -105,6 +106,30 @@ notesRouter.put("/updatenote/:id", fetchuser, [
         
         // res.json({updatedNote})
         
+    } catch (error) {    // catching errors
+        console.error(error.message);
+        res.status(500).send("Internal Server error.");
+    }
+});
+
+// ROUTE 4: Delete an existing Note using: DELETE "/api/notes/deletenote/:id". Login required
+notesRouter.delete("/deletenote/:id", fetchuser, async (req, res) => {
+    try {
+        const noteId = req.params.id;
+        const userId = req.user.id;
+
+        const note = await Note.findById(noteId);
+        if (!note){
+            return res.status(404).send("Not Found");
+        }
+        // Allow deletion only if this note belongs to the user
+        if (!note.user.equals(userId)){
+            return res.status(401).send("Not Allowed");
+        }
+        const deletedNote = await Note.findByIdAndDelete(noteId);
+
+        res.json({"success": "Note has been deleted."});
+
     } catch (error) {    // catching errors
         console.error(error.message);
         res.status(500).send("Internal Server error.");
