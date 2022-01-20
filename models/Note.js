@@ -4,7 +4,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const NotesSchema = new Schema({
+const NoteSchema = new Schema({
   user: {       // foreign key
     type: mongoose.Schema.Types.ObjectId,   // objectid of a document of another model 
     ref: 'user'                             // model in which above id is present
@@ -27,5 +27,5 @@ const NotesSchema = new Schema({
   }
 });
 
-const notes = mongoose.model("notes", NotesSchema);
-module.exports = notes;
+const note = mongoose.model("note", NoteSchema);
+module.exports = note;
