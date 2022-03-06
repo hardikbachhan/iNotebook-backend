@@ -20,14 +20,16 @@ authRouter.post("/createuser", [
     // if there are errors, return bad request and the errors
     const errors = validationResult(req);
     if (!errors.isEmpty()){
-        res.status(400).json({errors: errors.array()})
+        res.status(400).json({success: "false", errors: errors.array()})
     }
     try {
         // check if user with this email exists already
+        let success = true;
         
         let user = await User.findOne({email: req.body.email});
         if (user){
-            return res.status(400).json({error: "Sorry, a user with this email already exists."});
+            success = false;
+            return res.status(400).json({success, error: "Sorry, a user with this email already exists."});
         }
         // hashing the password before saving it in database
         const salt = await bcrpyt.genSalt(10);
@@ -55,7 +57,7 @@ authRouter.post("/createuser", [
         const authToken = jwt.sign(data, JWT_SECRET);
         // console.log(jwtData);
         // res.json({message: "user created successfully!"}); 
-        res.json({authToken})
+        res.json({success, authToken})
 
     } catch (error) {    // catching errors
         console.error(error.message);
@@ -71,20 +73,23 @@ authRouter.post("/login", [
     // if there are errors, return bad request and the errors
     const errors = validationResult(req);
     if (!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array()})   
+        return res.status(400).json({success: "false", errors: errors.array()})   
     }
     // finding user according to details given
     const {email, password} = req.body;
     try {
 
         let user = await User.findOne({email});
+        let success = true;
         // console.log(user.name);
         if (!user){
-            return res.status(400).json({error: "Please enter valid credentials."});
+            success = false;
+            return res.status(400).json({success, error: "Please enter valid credentials."});
         }
         const passwordCompare = await bcrpyt.compare(password, user.password)
         if (!passwordCompare){
-            return res.status(400).json({error: "Please enter valid credentials."});
+            success = false;
+            return res.status(400).json({success, error: "Please enter valid credentials."});
         }
         // res.json({message: "User login successfully."})
         const data = {
@@ -93,7 +98,7 @@ authRouter.post("/login", [
             }
         }
         const authToken = jwt.sign(data, JWT_SECRET);
-        res.json({authToken})
+        res.json({success, authToken})
 
     } catch (error) {
         console.log(error.message);
@@ -107,8 +112,8 @@ authRouter.post("/getuser", fetchuser, async (req, res) => {
     try {
         const userId = req.user.id;  //"todo";
         const user = await User.findById(userId).select("-password");
-        console.log(user);
-        res.send("user data found")
+        // console.log(user);
+        res.send({success: "true", user})
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server error.");
