@@ -7,7 +7,7 @@ const bcrpyt = require("bcryptjs");
 
 // JWT secret signature, should be stored in .env.local or config file.
 // Used to sign JWT when sending to a new user so that (s)he can access protected routes.
-const JWT_SECRET = "#ard!k1$ago@db0y";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const jwt = require("jsonwebtoken");
 
