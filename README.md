@@ -4,6 +4,8 @@
 
 - Link: http://i-notebook-app-hb.herokuapp.com/
 
+- Admin Email: admin@admin.com, Admin Password: admin123
+
 ## Frontend
 
 - Implemented using Bootstrap and React.js,  using Hooks (useState, useEffect, useRef, useContext, and useHistory).
