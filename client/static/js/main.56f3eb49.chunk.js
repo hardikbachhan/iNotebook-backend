@@ -484,7 +484,7 @@
         v = a.n(f),
         N = a(12),
         y = function (e) {
-          var t = "https://i-notebook-app-hb.herokuapp.com",
+          var t = "https://i-notebook-cv3r.onrender.com",
             a = Object(s.useState)([]),
             n = Object(o.a)(a, 2),
             c = n[0],
@@ -716,11 +716,11 @@
                         case 0:
                           return (
                             a.preventDefault(),
-                            "https://i-notebook-app-hb.herokuapp.com",
+                            "https://i-notebook-cv3r.onrender.com",
                             (t.next = 4),
                             fetch(
                               "".concat(
-                                "https://i-notebook-app-hb.herokuapp.com",
+                                "https://i-notebook-cv3r.onrender.com",
                                 "/api/auth/login"
                               ),
                               {
@@ -877,7 +877,7 @@
                         case 0:
                           if (
                             (a.preventDefault(),
-                            (s = "https://i-notebook-app-hb.herokuapp.com"),
+                            (s = "https://i-notebook-cv3r.onrender.com"),
                             (o = n.name),
                             (i = n.email),
                             (l = n.password),
